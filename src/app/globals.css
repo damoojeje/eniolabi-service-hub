@@ -1,0 +1,316 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Apple-style animations for enhanced dashboard */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+/* Apple-style enhanced animations */
+@keyframes cardFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.02);
+  }
+}
+
+@keyframes statusGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px currentColor;
+  }
+  50% {
+    box-shadow: 0 0 20px currentColor, 0 0 30px currentColor;
+  }
+}
+
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: var(--progress-width, 0%);
+  }
+}
+
+@keyframes iconBounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* Animation utility classes */
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.8s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.8s ease-out;
+}
+
+.animate-fade-in-delay-1 {
+  animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fadeIn 0.8s ease-out 0.4s both;
+}
+
+.animate-fade-in-delay-3 {
+  animation: fadeIn 0.8s ease-out 0.6s both;
+}
+
+.animate-shake {
+  animation: shake 0.6s ease-in-out;
+}
+
+/* Enhanced Apple-style animations */
+.animate-card-float {
+  animation: cardFloat 3s ease-in-out infinite;
+}
+
+.animate-status-glow {
+  animation: statusGlow 2s ease-in-out infinite;
+}
+
+.animate-progress-fill {
+  animation: progressFill 1s ease-out forwards;
+}
+
+.animate-icon-bounce {
+  animation: iconBounce 1s ease-in-out;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Enhanced shadows */
+.shadow-3xl {
+  box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Apple-style glass morphism */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Apple-style button interactions */
+.btn-apple {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(0);
+}
+
+.btn-apple:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-apple:active {
+  transform: translateY(0);
+  transition: all 0.1s;
+}
+
+/* Apple-style card interactions */
+.card-apple {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(0) scale(1);
+}
+
+.card-apple:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Apple-style status indicators */
+.status-online {
+  animation: statusGlow 2s ease-in-out infinite;
+  color: #34C759;
+}
+
+.status-warning {
+  animation: statusGlow 2s ease-in-out infinite;
+  color: #FF9F0A;
+}
+
+.status-error {
+  animation: statusGlow 2s ease-in-out infinite;
+  color: #FF3B30;
+}
+
+.status-offline {
+  color: #8E8E93;
+}
+
+/* Apple-style progress bars */
+.progress-apple {
+  background: linear-gradient(90deg, #007AFF, #5AC8FA);
+  border-radius: 9999px;
+  height: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-apple::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--progress-width, 0%);
+  background: linear-gradient(90deg, #34C759, #30D158);
+  border-radius: 9999px;
+  animation: progressFill 1s ease-out forwards;
+}
+
+/* Apple-style loading states */
+.loading-apple {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #007AFF;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--foreground);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Apple-style focus states */
+  .focus-apple:focus {
+    outline: 2px solid #007AFF;
+    outline-offset: 2px;
+  }
+
+  /* Apple-style transitions */
+  .transition-apple {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .transition-apple-fast {
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Apple-style hover effects */
+  .hover-apple:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Force dark theme for NoteEditor */
+  .dark .note-editor-container,
+  .dark .note-editor-container * {
+    background-color: rgb(31 41 55) !important; /* bg-gray-800 */
+    color: rgb(243 244 246) !important; /* text-gray-100 */
+  }
+
+  .dark .note-editor-container input,
+  .dark .note-editor-container textarea {
+    background-color: rgb(55 65 81) !important; /* bg-gray-700 */
+    border-color: rgb(75 85 99) !important; /* border-gray-600 */
+    color: rgb(243 244 246) !important; /* text-gray-100 */
+  }
+
+  .dark .note-editor-container input::placeholder,
+  .dark .note-editor-container textarea::placeholder {
+    color: rgb(156 163 175) !important; /* text-gray-400 */
+  }
+}

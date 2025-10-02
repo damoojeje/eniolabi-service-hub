@@ -1,0 +1,6 @@
+# Eniolabi Service Hub - Health Monitoring Cron Jobs
+# Check services every 2 minutes
+*/2 * * * * cd /var/www/eniolabi.com && NODE_ENV=production /usr/bin/node scripts/health-monitor.js >> /var/log/eniolabi-health-monitor.log 2>&1
+
+# Cleanup old service status records (keep last 24 hours worth)
+0 0 * * * cd /var/www/eniolabi.com && NODE_ENV=production /usr/bin/node -e "const{PrismaClient}=require('@prisma/client');const p=new PrismaClient();p.serviceStatus.deleteMany({where:{checkedAt:{lt:new Date(Date.now()-24*60*60*1000)}}}).then(()=>p.$disconnect())" >> /var/log/eniolabi-cleanup.log 2>&1

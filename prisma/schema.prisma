@@ -1,0 +1,278 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String   @id @default(cuid())
+  username            String   @unique
+  email               String   @unique
+  name                String?
+  image               String?
+  passwordHash        String?
+  role                Role     @default(GUEST)
+  isActive            Boolean  @default(true)
+  mustChangePassword  Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  lastLogin           DateTime?
+
+  accounts Account[]
+  sessions Session[]
+  notes    Note[]
+  notificationPreferences NotificationPreference?
+  notifications Notification[]
+  createdIncidents Incident[] @relation("IncidentCreator")
+  assignedIncidents Incident[] @relation("IncidentAssignee")
+  createdMaintenanceWindows MaintenanceWindow[] @relation("MaintenanceCreator")
+  createdNotificationRules NotificationRule[] @relation("NotificationRuleCreator")
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Service {
+  id              String         @id @default(cuid())
+  name            String
+  url             String
+  healthEndpoint  String?
+  description     String?
+  category        String
+  icon            String?
+  port            Int?
+  isActive        Boolean        @default(true)
+  checkInterval   Int            @default(30)
+  timeoutSeconds  Int            @default(10)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  serviceStatus ServiceStatus[]
+
+  @@map("services")
+}
+
+model ServiceStatus {
+  id           String   @id @default(cuid())
+  serviceId    String
+  status       Status
+  responseTime Int?
+  statusCode   Int?
+  errorMessage String?
+  checkedAt    DateTime @default(now())
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@map("service_status")
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  content   String
+  category  String   @default("general")
+  tags      String[]
+  isPinned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notes")
+}
+
+model NotificationPreference {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  emailEnabled    Boolean  @default(true)
+  statusChanges   Boolean  @default(true)
+  onlineToOffline Boolean  @default(true)
+  offlineToOnline Boolean  @default(true)
+  errorAlerts     Boolean  @default(true)
+  warningAlerts   Boolean  @default(false)
+  systemAlerts    Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   // 'info', 'warning', 'error', 'success'
+  title       String
+  message     String
+  priority    String   @default("normal") // 'low', 'normal', 'high', 'urgent'
+  isRead      Boolean  @default(false)
+  metadata    Json?    // Additional data like serviceId, status, etc.
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model SystemSettings {
+  id                    String   @id @default(cuid())
+  healthCheckInterval   Int      @default(300)        // seconds
+  notificationRetention Int      @default(30)         // days  
+  maxRetryAttempts      Int      @default(3)
+  timeoutThreshold      Int      @default(5000)       // milliseconds
+  maintenanceMode       Boolean  @default(false)
+  debugMode             Boolean  @default(false)
+  updatedAt             DateTime @updatedAt
+  updatedBy             String?  // User ID who last updated
+  
+  @@map("system_settings")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+model Incident {
+  id                 String   @id @default(cuid())
+  title              String
+  description        String
+  severity           IncidentSeverity @default(MAJOR)
+  status             IncidentStatus   @default(INVESTIGATING)
+  affectedComponents String[]
+  affectedServices   String[]
+  impactedUsers      Int              @default(0)
+  assignedTo         String?
+  tags               String[]
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  resolvedAt         DateTime?
+  createdBy          String
+  
+  creator User @relation("IncidentCreator", fields: [createdBy], references: [id])
+  assignee User? @relation("IncidentAssignee", fields: [assignedTo], references: [id])
+  
+  @@map("incidents")
+}
+
+model MaintenanceWindow {
+  id                 String   @id @default(cuid())
+  title              String
+  description        String
+  type               MaintenanceType @default(PLANNED)
+  startTime          DateTime
+  endTime            DateTime
+  affectedServices   String[]
+  impactLevel        MaintenanceImpact @default(MINIMAL)
+  notificationsSent  Boolean  @default(false)
+  status             MaintenanceStatus @default(SCHEDULED)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  createdBy          String
+  
+  creator User @relation("MaintenanceCreator", fields: [createdBy], references: [id])
+  
+  @@map("maintenance_windows")
+}
+
+model NotificationRule {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  conditions  Json     // Store complex conditions as JSON
+  actions     Json     // Store action configuration as JSON
+  cooldown    Int      @default(5) // minutes
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String
+  
+  creator User @relation("NotificationRuleCreator", fields: [createdBy], references: [id])
+  
+  @@map("notification_rules")
+}
+
+enum Role {
+  ADMIN
+  POWER_USER
+  GUEST
+}
+
+enum Status {
+  ONLINE
+  WARNING
+  ERROR
+  OFFLINE
+  MAINTENANCE
+}
+
+enum IncidentSeverity {
+  MINOR
+  MAJOR
+  CRITICAL
+}
+
+enum IncidentStatus {
+  INVESTIGATING
+  IDENTIFIED
+  MONITORING
+  RESOLVED
+}
+
+enum MaintenanceType {
+  PLANNED
+  EMERGENCY
+}
+
+enum MaintenanceImpact {
+  NO_IMPACT
+  MINIMAL
+  MODERATE
+  SIGNIFICANT
+}
+
+enum MaintenanceStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
