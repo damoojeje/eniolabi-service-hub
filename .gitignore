@@ -66,3 +66,21 @@ prisma/migrations/
 # Claude AI context files (may contain sensitive information)
 .claude/
 docs/development/
+*-context.md
+.claude-context.md
+
+# AI-related documentation and progress files
+CURSOR_AI_HANDOVER_COMPLETE.md
+CURRENT_STATUS_REPORT.md
+PRODUCTION_CONFIRMATION.md
+PRODUCTION_STATUS.md
+SECURITY.md
+SECURITY_CHECKLIST.md
+docs/CURSOR_AI_HANDOVER_COMPLETE.md
+docs/production/CURRENT_STATUS_REPORT.md
+docs/production/PRODUCTION_CONFIRMATION.md
+docs/production/PRODUCTION_STATUS.md
+
+# Cursor AI
+.cursor/
+.cursorrules
